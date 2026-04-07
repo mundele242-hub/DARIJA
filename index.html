@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Traducteur Français ↔ Darija</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=DM+Sans:wght@300;400;500&family=Amiri&display=swap" rel="stylesheet"/>
+<style>
+:root {
+--red: #C1272D; --red-light: #e8424a; --red-pale: #fdf2f2;
+--cream: #faf8f5; --dark: #1a1a1a; --mid: #555;
+--border: #e0dbd4; --white: #ffffff;
+--shadow: 0 2px 20px rgba(0,0,0,0.08);
+--shadow-hover: 0 6px 30px rgba(193,39,45,0.15);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--cream); min-height: 100vh; color: var(--dark); }
+header { background: var(--white); border-bottom: 1px solid var(--border); padding: 18px 24px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 8px rgba(0,0,0,0.06); }
+.logo-flag { width: 32px; height: 22px; background: var(--red); border-radius: 3px; display: flex; align-items: center; justify-content: center; color: white; font-size: 13px; }
+header h1 { font-family: 'Playfair Display', serif; font-size: 1.25rem; font-weight: 700; }
+header span { color: var(--red); }
+main { max-width: 860px; margin: 0 auto; padding: 28px 16px 60px; }
+.lang-bar { display: flex; align-items: center; background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 6px; max-width: 400px; margin: 0 auto 20px; box-shadow: var(--shadow); }
+.lang-btn { flex: 1; padding: 10px 20px; border: none; background: transparent; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 500; color: var(--mid); cursor: pointer; transition: all 0.2s; }
+.lang-btn.active { background: var(--red); color: white; box-shadow: 0 2px 10px rgba(193,39,45,0.3); }
+.swap-btn { width: 38px; height: 38px; border: 1.5px solid var(--border); border-radius: 50%; background: var(--white); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.25s; font-size: 16px; color: var(--red); margin: 0 2px; }
+.swap-btn:hover { background: var(--red); color: white; border-color: var(--red); transform: rotate(180deg); }
+.panel { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); transition: box-shadow 0.2s; margin-bottom: 16px; }
+.panel:focus-within { box-shadow: var(--shadow-hover); border-color: rgba(193,39,45,0.25); }
+.panel-header { padding: 12px 16px 10px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--red-pale); }
+.panel-lang { font-weight: 600; font-size: 0.88rem; color: var(--red); letter-spacing: 0.5px; text-transform: uppercase; }
+.mic-btn { display: flex; align-items: center; gap: 6px; padding: 5px 12px; border: 1px solid var(--red); border-radius: 20px; background: transparent; color: var(--red); font-size: 0.78rem; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.mic-btn:hover, .mic-btn.active { background: var(--red); color: white; }
+.mic-btn.active { animation: pulse 1.2s infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(193,39,45,0.4); } 50% { box-shadow: 0 0 0 6px rgba(193,39,45,0); } }
+textarea { width: 100%; min-height: 120px; border: none; outline: none; padding: 14px 16px; font-family: 'DM Sans', sans-serif; font-size: 1rem; line-height: 1.6; color: var(--dark); resize: vertical; background: transparent; }
+textarea::placeholder { color: #bbb; }
+.panel-footer { padding: 8px 12px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.copy-btn { display: flex; align-items: center; gap: 5px; padding: 4px 10px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--mid); font-size: 0.75rem; font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.15s; }
+.copy-btn:hover { background: var(--border); color: var(--dark); }
+.copy-btn.copied { border-color: #22c55e; color: #22c55e; }
+.translate-row { text-align: center; margin-bottom: 20px; }
+.translate-btn { background: var(--red); color: white; border: none; padding: 13px 40px; border-radius: 40px; font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 500; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 16px rgba(193,39,45,0.3); }
+.translate-btn:hover { background: var(--red-light); transform: translateY(-1px); }
+.translate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.results-title { font-size: 0.78rem; font-weight: 600; color: var(--mid); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; text-align: center; }
+.result-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); margin-bottom: 12px; }
+.result-header { padding: 10px 16px; background: var(--red-pale); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.result-label { font-size: 0.8rem; font-weight: 600; color: var(--red); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px; }
+.result-body { padding: 16px; min-height: 60px; }
+.result-text { font-size: 1.05rem; line-height: 1.7; color: var(--dark); }
+.result-text.arabic { font-size: 1.2rem; direction: rtl; text-align: right; font-family: 'Amiri', serif; }
+.result-text.empty { color: #ccc; font-style: italic; font-size: 0.9rem; }
+.speak-btn { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border: 1px solid var(--red); border-radius: 20px; background: transparent; color: var(--red); font-size: 0.78rem; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.speak-btn:hover { background: var(--red); color: white; }
+.speak-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.loading { display: none; align-items: center; justify-content: center; gap: 8px; padding: 20px; color: var(--mid); font-size: 0.9rem; }
+.loading.show { display: flex; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); animation: bounce 1.2s infinite; }
+.dot:nth-child(2) { animation-delay: 0.2s; }
+.dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,100% { transform: translateY(0); opacity: 0.4; } 50% { transform: translateY(-5px); opacity: 1; } }
+.error-msg { background: #fff5f5; border: 1px solid #fecaca; border-radius: 10px; padding: 12px 16px; color: #dc2626; font-size: 0.88rem; margin-top: 12px; display: none; }
+.error-msg.show { display: block; }
+footer { text-align: center; padding: 20px; color: #bbb; font-size: 0.78rem; }
+footer span { color: var(--red); }
+</style>
+</head>
+<body>
+<header>
+<div class="logo-flag">✦</div>
+<h1>Traducteur <span>Darija</span></h1>
+</header>
+<main>
+<div class="lang-bar">
+<button class="lang-btn active" id="btn-fr">🇫🇷 Français</button>
+<button class="swap-btn" id="swapBtn">⇄</button>
+<button class="lang-btn" id="btn-dar">🇲🇦 Darija</button>
+</div>
+<div class="panel">
+<div class="panel-header">
+<span class="panel-lang" id="srcLangLabel">Français</span>
+<button class="mic-btn" id="micBtn">🎙 Parler</button>
+</div>
+<textarea id="inputText" placeholder="Écrivez ici ou utilisez le micro…" rows="5"></textarea>
+<div class="panel-footer">
+<button class="copy-btn" onclick="copyText('inputText', this)">📋 Copier</button>
+<button class="copy-btn" onclick="clearInput()" style="color:#e55">✕ Effacer</button>
+</div>
+</div>
+<div class="translate-row">
+<button class="translate-btn" id="translateBtn" onclick="doTranslate()">Traduire →</button>
+</div>
+<div class="loading" id="loadingEl">
+<div class="dot"></div><div class="dot"></div><div class="dot"></div>
+<span>Traduction en cours…</span>
+</div>
+<div class="error-msg" id="errorMsg"></div>
+<div id="resultsSection" style="display:none;">
+<div class="results-title">Traductions</div>
+<div class="result-card" id="cardPhonetic">
+<div class="result-header">
+<span class="result-label">📖 <span id="phoneticLabel">Darija — Phonétique</span></span>
+<button class="copy-btn" onclick="copyText('phoneticText', this)">📋 Copier</button>
+</div>
+<div class="result-body">
+<div class="result-text empty" id="phoneticText">—</div>
+</div>
+</div>
+<div class="result-card" id="cardArabic">
+<div class="result-header">
+<span class="result-label">✍️ Darija — Écriture Arabe</span>
+<button class="copy-btn" onclick="copyText('arabicText', this)">📋 Copier</button>
+</div>
+<div class="result-body">
+<div class="result-text arabic empty" id="arabicText">—</div>
+</div>
+</div>
+<div class="result-card">
+<div class="result-header">
+<span class="result-label">🔊 <span id="vocalLabel">Écouter la traduction</span></span>
+<button class="speak-btn" id="speakBtn" onclick="speakTranslation()" disabled>▶ Lire</button>
+</div>
+<div class="result-body" style="padding:12px 16px;">
+<div style="font-size:0.85rem;color:var(--mid);">Cliquez sur "Lire" pour entendre la traduction.</div>
+</div>
+</div>
+</div>
+</main>
+<footer>Fait avec <span>♥</span> — Français ↔ Darija Marocain</footer>
+<script>
+const API_KEY = "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";
+
+let direction = ‘fr-to-dar’;
+let recognition = null;
+let isMicActive = false;
+let lastTranslation = {};
+
+function updateUI() {
+const isFrToDar = direction === ‘fr-to-dar’;
+document.getElementById(‘btn-fr’).classList.toggle(‘active’, isFrToDar);
+document.getElementById(‘btn-dar’).classList.toggle(‘active’, !isFrToDar);
+document.getElementById(‘srcLangLabel’).textContent = isFrToDar ? ‘Français’ : ‘Darija / Arabe’;
+document.getElementById(‘inputText’).placeholder = isFrToDar ? ‘Écrivez en français ou utilisez le micro…’ : ‘Écrivez en Darija (phonétique ou arabe) ou parlez…’;
+document.getElementById(‘phoneticLabel’).textContent = isFrToDar ? ‘Darija — Phonétique’ : ‘Traduction Française’;
+document.getElementById(‘cardArabic’).style.display = isFrToDar ? ‘’ : ‘none’;
+document.getElementById(‘vocalLabel’).textContent = isFrToDar ? ‘Écouter en Darija’ : ‘Écouter en Français’;
+hideResults(); clearError();
+}
+
+document.getElementById(‘btn-fr’).onclick = () => { direction = ‘fr-to-dar’; updateUI(); };
+document.getElementById(‘btn-dar’).onclick = () => { direction = ‘dar-to-fr’; updateUI(); };
+document.getElementById(‘swapBtn’).onclick = () => { direction = direction === ‘fr-to-dar’ ? ‘dar-to-fr’ : ‘fr-to-dar’; updateUI(); };
+
+document.getElementById(‘micBtn’).onclick = toggleMic;
+function toggleMic() {
+if (!(‘webkitSpeechRecognition’ in window) && !(‘SpeechRecognition’ in window)) { showError(“Reconnaissance vocale non supportée. Utilisez Chrome.”); return; }
+if (isMicActive) { recognition && recognition.stop(); return; }
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+recognition = new SR();
+recognition.lang = direction === ‘fr-to-dar’ ? ‘fr-FR’ : ‘ar-MA’;
+recognition.interimResults = false;
+recognition.onstart = () => { isMicActive = true; document.getElementById(‘micBtn’).classList.add(‘active’); document.getElementById(‘micBtn’).textContent = ‘⏹ Stop’; };
+recognition.onresult = (e) => { document.getElementById(‘inputText’).value = e.results[0][0].transcript; };
+recognition.onerror = (e) => showError(’Erreur micro : ’ + e.error);
+recognition.onend = () => { isMicActive = false; document.getElementById(‘micBtn’).classList.remove(‘active’); document.getElementById(‘micBtn’).innerHTML = ‘🎙 Parler’; };
+recognition.start();
+}
+
+async function doTranslate() {
+const input = document.getElementById(‘inputText’).value.trim();
+if (!input) return;
+showLoading(true); hideResults(); clearError();
+document.getElementById(‘translateBtn’).disabled = true;
+const systemPrompt = `Tu es un expert traducteur entre le français et le darija marocain. Réponds UNIQUEMENT en JSON valide, sans markdown ni backticks. Pour français → darija : {"phonetic": "...", "arabic": "...", "note": ""} Pour darija → français : {"french": "...", "note": ""} Utilise le darija marocain authentique.`;
+const userPrompt = direction === ‘fr-to-dar’ ? `Traduis ce texte français en darija marocain : "${input}"` : `Traduis ce texte darija marocain en français : "${input}"`;
+try {
+const res = await fetch(‘https://api.anthropic.com/v1/messages’, {
+method: ‘POST’,
+headers: { ‘Content-Type’: ‘application/json’, ‘x-api-key’: API_KEY, ‘anthropic-version’: ‘2023-06-01’ },
+body: JSON.stringify({ model: ‘claude-sonnet-4-20250514’, max_tokens: 1000, system: systemPrompt, messages: [{ role: ‘user’, content: userPrompt }] })
+});
+const data = await res.json();
+if (!res.ok) throw new Error(data.error?.message || ‘Erreur API’);
+const raw = data.content.map(b => b.text || ‘’).join(’’);
+const parsed = JSON.parse(raw.replace(/`json|`/g, ‘’).trim());
+lastTranslation = parsed;
+displayResults(parsed);
+} catch (err) {
+showError(’Erreur : ’ + err.message);
+} finally {
+showLoading(false);
+document.getElementById(‘translateBtn’).disabled = false;
+}
+}
+
+function displayResults(parsed) {
+document.getElementById(‘resultsSection’).style.display = ‘block’;
+if (direction === ‘fr-to-dar’) {
+setResult(‘phoneticText’, parsed.phonetic, false);
+setResult(‘arabicText’, parsed.arabic, true);
+document.getElementById(‘speakBtn’).disabled = !parsed.phonetic;
+} else {
+setResult(‘phoneticText’, parsed.french, false);
+document.getElementById(‘speakBtn’).disabled = !parsed.french;
+}
+}
+
+function setResult(id, text, isArabic) {
+const el = document.getElementById(id);
+if (text) { el.textContent = text; el.classList.remove(‘empty’); if (isArabic) el.classList.add(‘arabic’); else el.classList.remove(‘arabic’); }
+else { el.textContent = ‘—’; el.classList.add(‘empty’); }
+}
+
+function speakTranslation() {
+const text = direction === ‘fr-to-dar’ ? lastTranslation.phonetic : lastTranslation.french;
+if (!text) return;
+const utter = new SpeechSynthesisUtterance(text);
+utter.lang = direction === ‘fr-to-dar’ ? ‘ar-MA’ : ‘fr-FR’;
+utter.rate = 0.9;
+window.speechSynthesis.speak(utter);
+const btn = document.getElementById(‘speakBtn’);
+btn.textContent = ‘⏸ Lecture…’;
+utter.onend = () => { btn.textContent = ‘▶ Lire’; };
+}
+
+function copyText(id, btn) {
+const el = document.getElementById(id);
+const text = el.value || el.textContent;
+if (!text || text === ‘—’) return;
+navigator.clipboard.writeText(text).then(() => {
+const orig = btn.innerHTML; btn.classList.add(‘copied’); btn.innerHTML = ‘✓ Copié’;
+setTimeout(() => { btn.classList.remove(‘copied’); btn.innerHTML = orig; }, 1800);
+});
+}
+
+function clearInput() { document.getElementById(‘inputText’).value = ‘’; hideResults(); clearError(); }
+function showLoading(v) { document.getElementById(‘loadingEl’).classList.toggle(‘show’, v); }
+function hideResults() { document.getElementById(‘resultsSection’).style.display = ‘none’; }
+function showError(msg) { const e = document.getElementById(‘errorMsg’); e.textContent = msg; e.classList.add(‘show’); }
+function clearError() { document.getElementById(‘errorMsg’).classList.remove(‘show’); }
+document.getElementById(‘inputText’).addEventListener(‘keydown’, e => { if (e.key === ‘Enter’ && (e.metaKey || e.ctrlKey)) doTranslate(); });
+</script>
+
+</body>
+</html>
