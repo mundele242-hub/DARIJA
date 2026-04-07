@@ -130,9 +130,7 @@ footer span { color: var(--red); }
 </main>
 <footer>Fait avec <span>♥</span> — Français ↔ Darija Marocain</footer>
 <script>
-const API_KEY = "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";
-
-let direction = ‘fr-to-dar’;
+let direction = 'fr-to-dar';
 let recognition = null;
 let isMicActive = false;
 let lastTranslation = {};
@@ -173,18 +171,14 @@ const input = document.getElementById(‘inputText’).value.trim();
 if (!input) return;
 showLoading(true); hideResults(); clearError();
 document.getElementById(‘translateBtn’).disabled = true;
-const systemPrompt = `Tu es un expert traducteur entre le français et le darija marocain. Réponds UNIQUEMENT en JSON valide, sans markdown ni backticks. Pour français → darija : {"phonetic": "...", "arabic": "...", "note": ""} Pour darija → français : {"french": "...", "note": ""} Utilise le darija marocain authentique.`;
-const userPrompt = direction === ‘fr-to-dar’ ? `Traduis ce texte français en darija marocain : "${input}"` : `Traduis ce texte darija marocain en français : "${input}"`;
 try {
-const res = await fetch(‘https://api.anthropic.com/v1/messages’, {
+const res = await fetch(’/.netlify/functions/translate’, {
 method: ‘POST’,
-headers: { ‘Content-Type’: ‘application/json’, ‘x-api-key’: API_KEY, ‘anthropic-version’: ‘2023-06-01’ },
-body: JSON.stringify({ model: ‘claude-sonnet-4-20250514’, max_tokens: 1000, system: systemPrompt, messages: [{ role: ‘user’, content: userPrompt }] })
+headers: { ‘Content-Type’: ‘application/json’ },
+body: JSON.stringify({ text: input, direction })
 });
-const data = await res.json();
-if (!res.ok) throw new Error(data.error?.message || ‘Erreur API’);
-const raw = data.content.map(b => b.text || ‘’).join(’’);
-const parsed = JSON.parse(raw.replace(/`json|`/g, ‘’).trim());
+const parsed = await res.json();
+if (!res.ok) throw new Error(parsed.error || ‘Erreur serveur’);
 lastTranslation = parsed;
 displayResults(parsed);
 } catch (err) {
